@@ -1,0 +1,36 @@
+[Unit]
+Description=Palworld Dedicated Server
+Documentation=https://github.com/tsvenbla/az-palworld-server
+Wants=network-online.target
+After=syslog.target network.target nss-lookup.target network-online.target
+
+[Service]
+# Paths and Environment
+Environment="LD_LIBRARY_PATH=./linux64"
+WorkingDirectory=/home/steam
+
+# User and Group
+User=steam
+Group=steam
+
+# Executables
+ExecStartPre=/usr/games/steamcmd +force_install_dir /home/steam/palworld_server +login anonymous +app_update 2394010 validate +quit
+ExecStart=/home/steam/palworld_server/PalServer.sh -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS
+
+# Service Management
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=3min
+TimeoutStopSec=90s
+
+# Security Settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+LimitNOFILE=2048
+
+# Output
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
